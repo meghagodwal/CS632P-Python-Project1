@@ -49,8 +49,8 @@ class Books:
         condition_list = ["Junk", "Critical", "Bad", "Poor", "Fair", "Good", "Like New", "New"]
         while True:
             choice = inputNumber("\nCONDITION: Please choose book condition from the list: [1-8]" +
-            '\n\n::: OPTIONS :::   1 = Junk, 2 = Critical, 3 = Bad, 4 = Poor, 5 = Fair, 6 = Good, 7 = Like New, '
-            '8 = New   :::   ')
+            '\n\n::: OPTIONS :::   1 = Poor, 2 = Fair, 3 = Bad, 4 = Good, 5 = Like New, '
+            '6 = New   :::   ')
             if (choice > 0) and (choice < 9):
                 condition = condition_list[choice - 1]
                 break
@@ -74,14 +74,14 @@ class Books:
         print("     Retail Price:  |",  self.retail_price)
 
     def Return(self):
-        extraditedit = {'\n  Number:        |':     self.number,
+        extraedit = {'\n  Number:        |':     self.number,
                             'Title:         |':     self.title,
                             'Genre:         |':     self.genre,
                             'Author:        |':     self.author,
                             'Condition:     |':     self.condition,
                             'Price:         |':     self.purchase_price,
                             'Retail Price:  |':     self.retail_price}
-        output = '\n'.join("{!s}  {!r}".format(key,val) for (key,val) in extraditedit.items())
+        output = '\n'.join("{!s}  {!r}".format(key,val) for (key,val) in extraedit.items())
         output = output.replace("'", "")
         return output
 
@@ -95,7 +95,6 @@ class Inventory(object):
     def purchase_from_input(self):
         self.inventory.append(Books.from_input())
 
-
     def sell_item(self):
         choice = input("Please enter the Book number you wish to sell: ")
         for i in range(len(self.inventory)):
@@ -104,7 +103,6 @@ class Inventory(object):
                 profit = ask - self.inventory[i].getprice()
                 print("Your profit is:" )
                 print(profit)
-
 
     def export_inventory(self):
         userfilename = str(input("\nEnter name to save file (extension will be added automatically): ") + ".txt")
@@ -120,15 +118,29 @@ class Inventory(object):
             self.inventory[i].Display()
             sleep(0.3)
 
+class sale_model(Inventory):
+    def __init__(self,name, quantity ):
+        Inventory.__init__(self)
+        self.name = name
+        self.quantity = quantity
+        pass
+
+
 def main():
     inventory = Inventory()
-    inventory.add_item(Books("1", "To kill a Mocking Bird", "Drama", "Henry Lee", "Old", 12,14))
+    inventory.add_item(Books("1", "To kill a Mocking Bird", "Thriller", "Henry Lee", "Old", 12,14))
     inventory.add_item(Books("2", "The Great Gatsby", "Fiction", "F. Scott Fitzgerald", "Fair", 30,35))
     inventory.add_item(Books("3", "Jane Eyre", "Romance", "Charlotte Bronte", "Good", 29,32))
     inventory.add_item(Books("4", "The Da Vinci Code", "Mystery", "Dan Brown", "Like New", 34,40))
     inventory.add_item(Books("5", "Harry Potter and the Sorcerer's Stone", "Fantasy Fiction", "J.K. Rowling", "Good",45,
                              50))
-
+    inventory.add_item(Books("6", "Little Women", "Historical Fiction", "Louisa May Alcott", "Fair",35,38))
+    inventory.add_item(Books("7", "Harry Potter and the Chambers of Secret", "Fantasy Fiction", "J.K. Rowling", "Old",
+                             42,46))
+    inventory.add_item(Books("8", "The Fault in our stars", "Romance", "John Green", "New", 15,20))
+    inventory.add_item(Books("9", "The Catcher in the Rye", "Young Adult Fiction", "J. D. Salinger", "Fairly new",25,
+                             30))
+    inventory.add_item(Books("10", "And Then There Were None", "Mystery", "Agatha Christie", "Good",37,40))
     menuItems = ['View Inventory','Purchase Book', 'Sell Book', 'Export Inventory', 'Quit']
 
     print("\nWelcome to Tim's Book Store")
