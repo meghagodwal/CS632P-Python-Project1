@@ -1,4 +1,3 @@
-from datetime import datetime
 import random
 import sys
 from time import sleep
@@ -10,7 +9,6 @@ def yesNo(question):
             return True
         if reply[:1] == 'n':
             return False
-
 
 def inputNumber(prompt):
     while True:
@@ -29,8 +27,6 @@ def displayMenu(options, choice = 999):
     while choice >= (len(options)+1):
         choice = inputNumber("\nPlease choose an option: ")
     return choice
-
-
 
 class Books:
     def __init__(self, number, title, genre, author, condition, purchase_price, retail_price):
@@ -62,6 +58,12 @@ class Books:
                 print ("\nPlease choose valid option!")
         return cls(number, title, genre, author, price, retail_price, condition)
 
+    def getnumber(self):
+        return self.number
+
+    def getprice(self):
+        return self.purchase_price
+
     def Display(self):
         print("\n\n     Number:        |",  self.number)
         print("     Title:         |",  self.title.title())
@@ -90,18 +92,18 @@ class Inventory(object):
     def add_item(self, book):
         self.inventory.append(book)
 
-    def add_from_input(self):
+    def purchase_from_input(self):
         self.inventory.append(Books.from_input())
 
-    def purchase_item(self):
-        pass
 
     def sell_item(self):
-        choice=int(input("Enter Book Id: "))
-        pass
-
-
-
+        choice = input("Please enter the Book number you wish to sell: ")
+        for i in range(len(self.inventory)):
+            if self.inventory[i].getnumber() == choice:
+                ask= int(input("Please enter the price : "))
+                profit = ask - self.inventory[i].getprice()
+                print("Your profit is:" )
+                print(profit)
 
 
     def export_inventory(self):
@@ -127,7 +129,7 @@ def main():
     inventory.add_item(Books("5", "Harry Potter and the Sorcerer's Stone", "Fantasy Fiction", "J.K. Rowling", "Good",45,
                              50))
 
-    menuItems = ['View Inventory','Add Book','Purchase Book', 'Sell Book', 'Export Inventory', 'Quit']
+    menuItems = ['View Inventory','Purchase Book', 'Sell Book', 'Export Inventory', 'Quit']
 
     print("\nWelcome to Tim's Book Store")
     while True:
@@ -139,23 +141,19 @@ def main():
         elif choice == 2:
             print("\nADD NEW BOOK TO INVENTORY:\n")
             sleep(0.8)
-            inventory.add_from_input()
+            inventory.purchase_from_input()
             print("\nBOOK ADDITION SUCCESSFUL. Item can now be found in inventory listing.")
         elif choice == 3:
-            print("\nPURCHASE BOOK")
-            sleep(0.8)
-            inventory.purchase_item()
-        elif choice == 4:
             print("\nSELL A BOOK")
             sleep(0.8)
             inventory.sell_item()
-        elif choice == 5:
+        elif choice == 4:
             inventory.export_inventory()
         else:
             check = yesNo("\nARE YOU SURE? All data will be lost. Backup?")
             if check:
                 inventory.export_inventory()
-            print ("\nPROGRAM UNDERGOING TERMINATION.\n\nFinding eels, filling hovercrafts...\n")
+            print ("\nPROGRAM UNDERGOING TERMINATION.\n")
             sleep(1)
             quit()
 
