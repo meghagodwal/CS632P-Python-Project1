@@ -1,0 +1,4 @@
+1) python - 3.7.4
+2) import random
+3) import time
+4) import sys
