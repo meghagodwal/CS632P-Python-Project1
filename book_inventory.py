@@ -2,6 +2,7 @@ import random
 import sys
 from time import sleep
 
+#The following useful functions are included to simplify error handling further down.
 def yesNo(question):
     while True:
         reply = str(input(question+' (Y/N): ')).lower().strip()
@@ -10,6 +11,7 @@ def yesNo(question):
         if reply[:1] == 'n':
             return False
 
+# Make user enter a number
 def inputNumber(prompt):
     while True:
         try:
@@ -20,6 +22,7 @@ def inputNumber(prompt):
         else:
             return userInput
 
+# global menu function, takes list of options and takes only valid input
 def displayMenu(options, choice = 999):
     print("\n:::[MAIN MENU]:::\n")
     for i in range(len(options)):
@@ -28,6 +31,7 @@ def displayMenu(options, choice = 999):
         choice = inputNumber("\nPlease choose an option: ")
     return choice
 
+# main book class, has constructor, creator, display and formatting logic built in.
 class Books:
     def __init__(self, number, title, genre, author, condition, purchase_price, retail_price):
         self.number = number
@@ -38,7 +42,7 @@ class Books:
         self.purchase_price = purchase_price
         self.retail_price=retail_price
 
-    @classmethod
+    @classmethod    # A user interface for adding new books.
     def from_input(cls):
         number = inputNumber("Please enter book Id: ")
         title = input("Please enter Title: ")
@@ -56,7 +60,8 @@ class Books:
                 break
             else:
                 print ("\nPlease choose valid option!")
-        return cls(number, title, genre, author, price, retail_price, condition)
+        return cls(number, title, genre, author, condition,price, retail_price, )
+
 
     def getnumber(self):
         return self.number
@@ -73,6 +78,8 @@ class Books:
         print("     Price:         |",  self.purchase_price)
         print("     Retail Price:  |",  self.retail_price)
 
+    # setup return function to pipe data elsewhere (such as file). used dictionary to work better for making a
+    # string to output to file
     def Return(self):
         extraedit = {'\n  Number:        |':     self.number,
                             'Title:         |':     self.title,
@@ -85,6 +92,8 @@ class Books:
         output = output.replace("'", "")
         return output
 
+# The inventory keep tracks of array and facilitates purchasing,selling, deletion, updating, displaying and
+# exporting of Book items.
 class Inventory(object):
     def __init__(self):
         self.inventory = []
@@ -101,8 +110,25 @@ class Inventory(object):
             if self.inventory[i].getnumber() == choice:
                 ask= int(input("Please enter the price : "))
                 profit = ask - self.inventory[i].getprice()
-                print("Your profit is:" )
-                print(profit)
+                if ask > self.inventory[i].getprice():
+                    print("Your profit is:" )
+                    print(profit)
+                else:
+                    print("Your loss is : " )
+                    print( profit)
+
+    def update_item(self):
+        upd_nominee = input("Please enter the book number you wish to update details for: ")
+        for i in range(len(self.inventory)):
+            if self.inventory[i].getnumber() == upd_nominee.upper():
+                print("\nBook", upd_nominee, "was found in list. Enter new attributes:\n")
+                self.inventory[i] = Books.from_input()
+                print("\nBook", upd_nominee, 'was successfully updated.')
+                return upd_nominee
+                break
+        else:
+            print('\nBook of "', upd_nominee,
+                  '"not found. Please choose desired option again from menu and ensure correct entry.')
 
     def export_inventory(self):
         userfilename = str(input("\nEnter name to save file (extension will be added automatically): ") + ".txt")
@@ -113,20 +139,25 @@ class Inventory(object):
         outfile.close()
         input("\nINVENTORY EXPORT SUCCESSFUL. File was saved as '" + userfilename + "'. [ENTER]")
 
+    def remove_item(self):
+        del_nominee = input("\nPlease enter the Book number you wish to delete: ")
+        for i in range(len(self.inventory)):
+            if self.inventory[i].getnumber() == del_nominee.upper():
+                self.inventory.pop(i)
+                print("\nBook with number of",del_nominee,"was removed from inventory.")
+                break
+        else:
+            print("\nBook not found. Please try again from menu and ensure correct entry.")
+
+
     def display_inventory(self):
         for i in range(len(self.inventory)):
             self.inventory[i].Display()
             sleep(0.3)
 
-class sale_model(Inventory):
-    def __init__(self,name, quantity ):
-        Inventory.__init__(self)
-        self.name = name
-        self.quantity = quantity
-        pass
-
 
 def main():
+    # created an empty inventory
     inventory = Inventory()
     inventory.add_item(Books("1", "To kill a Mocking Bird", "Thriller", "Henry Lee", "Old", 12,14))
     inventory.add_item(Books("2", "The Great Gatsby", "Fiction", "F. Scott Fitzgerald", "Fair", 30,35))
@@ -134,14 +165,9 @@ def main():
     inventory.add_item(Books("4", "The Da Vinci Code", "Mystery", "Dan Brown", "Like New", 34,40))
     inventory.add_item(Books("5", "Harry Potter and the Sorcerer's Stone", "Fantasy Fiction", "J.K. Rowling", "Good",45,
                              50))
-    inventory.add_item(Books("6", "Little Women", "Historical Fiction", "Louisa May Alcott", "Fair",35,38))
-    inventory.add_item(Books("7", "Harry Potter and the Chambers of Secret", "Fantasy Fiction", "J.K. Rowling", "Old",
-                             42,46))
-    inventory.add_item(Books("8", "The Fault in our stars", "Romance", "John Green", "New", 15,20))
-    inventory.add_item(Books("9", "The Catcher in the Rye", "Young Adult Fiction", "J. D. Salinger", "Fairly new",25,
-                             30))
-    inventory.add_item(Books("10", "And Then There Were None", "Mystery", "Agatha Christie", "Good",37,40))
-    menuItems = ['View Inventory','Purchase Book', 'Sell Book', 'Export Inventory', 'Quit']
+    # List menu items for function
+    menuItems = ['View Inventory','Purchase Book', 'Sell Book', 'Update Book Details','Remove Book Entry',
+                 'Export Inventory', 'Quit']
 
     print("\nWelcome to Tim's Book Store")
     while True:
@@ -160,6 +186,12 @@ def main():
             sleep(0.8)
             inventory.sell_item()
         elif choice == 4:
+            print("\nUPDATE A BOOK")
+            inventory.update_item()
+        elif choice == 5:
+            print("\nREMOVE A BOOK")
+            inventory.remove_item()
+        elif choice == 6:
             inventory.export_inventory()
         else:
             check = yesNo("\nARE YOU SURE? All data will be lost. Backup?")
