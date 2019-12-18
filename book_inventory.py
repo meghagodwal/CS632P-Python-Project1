@@ -111,7 +111,7 @@ class Inventory(object):
                 ask= int(input("Please enter the price : "))
                 profit = ask - self.inventory[i].getprice()
                 if ask > self.inventory[i].getprice():
-                    print("Your profit is:" )
+                    print("Your profit is:")
                     print(profit)
                 else:
                     print("Your loss is : " )
